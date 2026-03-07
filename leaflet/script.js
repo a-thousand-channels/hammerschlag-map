@@ -1,6 +1,6 @@
 
 // Initialize map
-const map = L.map('map').setView([53.55, 10.0], 14);
+const map = L.map('map').setView([53.55, 10.0], 13);
 
 // Add WMS layer - Hamburg Historical Map 1980s
 L.tileLayer.wms('https://geodienste.hamburg.de/HH_WMS_Historische_Karte_1_5000', {
@@ -9,9 +9,11 @@ L.tileLayer.wms('https://geodienste.hamburg.de/HH_WMS_Historische_Karte_1_5000',
     transparent: true,
     version: '1.1.1',
     srs: 'EPSG:3857',
-    attribution: 'Karte: LGV Hamburg, Lizenz dl-de/by-2-0',
+    attribution: 'Karte: LGV Hamburg, Lizenz <a href="https://www.govdata.de/dl-de/by-2-0" target="_blank">dl-de/by-2-0</a>',
     zIndex: 1
 }).addTo(map);
+
+map.attributionControl.setPrefix('<a href="https://a-thousand-channels.xyz" target="_blank">A Thousand Channels </a>');
 
 // Reusable function to load and render GeoJSON layers
 function addGeoJSONLayer(url, options = {}) {
@@ -28,6 +30,84 @@ function addGeoJSONLayer(url, options = {}) {
         .then(response => response.json())
         .then(data => {
             const layerGroup = L.layerGroup().addTo(map);
+            let uid = 0;
+            const tooltip_class = 'tooltip-orient'
+            const DivIconLayer = L.geoJSON([data], {
+                style(feature) {
+                    return feature.properties && feature.properties.style;
+                },
+
+                pointToLayer(feature, latlng) {
+                    // console.log("Set marker for "+feature.properties.name + " " + uid);
+                    uid++;
+
+                    let berth_icon = L.divIcon({
+                        className: 'berth-marker berth-marker-'+feature.properties.id+' layer-'+name,
+                        html: `<svg
+                        width="27"
+                        height="48"
+                        viewBox="0 0 9.5250003 17.197917"
+                        version="1.1"
+                        id="svg955"
+                        xmlns="http://www.w3.org/2000/svg"
+                        xmlns:svg="http://www.w3.org/2000/svg">
+                        <g
+                        transform="translate(-45.037906,-244.4065)">
+                        <g
+                            transform="matrix(0.97734571,0,0,0.97223334,-156.08824,114.17017)">
+                            <path
+                            class="marker_shadow"
+                            style="opacity:0.8;fill:#808080;fill-opacity:1;stroke-width:0.432578;stroke-linejoin:bevel;stroke-dasharray:0.432578, 0.865158;paint-order:stroke fill markers"
+                            d="m 207.93885,134.97565 3.16945,-0.27113 3.40993,-0.29166 c 1.00015,-0.0762 1.05377,0.0297 1.00255,0.99571 l -0.32807,4.02177 -0.56023,6.86792 -4.42218,5.34666 -4.02772,-4.87641 0.39143,-10.4702 c 0.0796,-1.07374 0.23097,-1.23472 1.36484,-1.32265 z"
+                            sodipodi:nodetypes="ccccccccccc" />
+                            <path
+                            class="marker"
+                            style="opacity:0.8;fill:${color};fill-opacity:0.947811;stroke-width:0.440654;stroke-linejoin:bevel;stroke-dasharray:0.440654, 0.881309;paint-order:stroke fill markers"
+                            d="m 207.07481,133.9562 h 3.13549 l 3.37339,3e-5 c 0.98992,0.01 1.04879,0.12574 1.04879,1.13438 v 11.20765 l -4.42218,5.34666 -4.42217,-5.34666 v -11.07712 c 0.0225,-1.11915 0.16448,-1.27441 1.28668,-1.26491 z"
+                            sodipodi:nodetypes="cccccccccc" />
+                        </g>
+                        <g>
+                        <text transform="matrix(1 0 0 1 49.5 249)" fill="#555" text-anchor="middle">`+feature.properties.name+`</text>
+                            
+                        </g>
+                        </g>
+                    </svg>`,
+                        /* iconAnchor: [20, 98], */
+                        iconAnchor: [18, 74],
+                    });
+                    let marker = L.marker(latlng, {
+                    icon: berth_icon,
+                    uniqueID: feature.properties.id,
+                    });
+                    marker.bindTooltip("<div class='"+tooltip_class+"'><h4>"+feature.properties.name+"</h4>", {
+                    direction: 'top',
+                    opacity: 0.9,
+                    className: 'leaflet-tooltip-audio',
+                    offset: [-3, -70],
+                    interactive: true,
+                    permanent: false
+                    });
+  
+                    marker.on('click', function (event) {
+                        console.log('clicked');
+                        // TODO open popup with more info, e.g. audio player, text, etc.
+                        const popupContent = PopUpContent(feature.properties);
+                        marker.bindPopup(popupContent, {
+                            maxWidth: 400,
+                            offset: [-3, -50],
+
+                        }).openPopup();
+                    });
+                    return marker;
+                }
+                });
+            console.log('Layer ID '+DivIconLayer._leaflet_id);
+            DivIconLayer.addTo(layerGroup);
+ 
+    
+
+            /* tooltip custom */
+            /*
             const tooltip = document.createElement('div');
             tooltip.style.cssText = `
                 display: none;
@@ -43,7 +123,9 @@ function addGeoJSONLayer(url, options = {}) {
                 font-family: sans-serif;
             `;
             document.body.appendChild(tooltip);
-
+            */
+            /* work with data */
+            /*
             data.features.forEach(feature => {
                 const coordinates = feature.geometry.coordinates;
                 const properties = feature.properties;
@@ -80,36 +162,7 @@ function addGeoJSONLayer(url, options = {}) {
                 // Add popup on click
                 circles.forEach(circle => {
                     circle.on('click', (e) => {
-                        let popupContent = '<div class="popup-content-inner">';
-                        popupContent += `<h3>${properties['name']}</h3>`;
-                        if (properties['subtitle']) {
-                            popupContent += `<h4>${properties['subtitle']}</h4>`;
-                        }
-                        if (properties['address'] || properties['zip'] || properties['city']) {
-                            let address = '';
-                            if (properties['address']) {
-                                address += properties['address'];
-                                if (properties['zip']) {
-                                    address += `, ${properties['zip']}`;
-                                }
-                                if (properties['city']) {
-                                    address += ` ${properties['city']}`;
-                                }
-                            }
-                            if (address.length > 0) {
-                                popupContent += '<div class="address">';
-                                popupContent += `<p>${address}</p>`;
-                                popupContent += '</div>';
-                            }
-                        }
-                        if (properties['teaser']) {
-                            popupContent += `<div class="teaser">${properties['teaser']}</div>`;
-                        }
-                        if (properties['text']) {
-                            popupContent += `<div class="text">${properties['text']}</div>`;
-                        }
-                        popupContent += '</div>';
-
+                        const popupContent = PopUpContent(properties);
                         L.popup({maxWidth: 400})
                             .setLatLng(latlng)
                             .setContent(popupContent)
@@ -141,8 +194,42 @@ function addGeoJSONLayer(url, options = {}) {
                     });
                 });
             });
+            */
         })
         .catch(error => console.error(`Error loading GeoJSON from ${url}:`, error));
+}
+
+function PopUpContent(properties) {
+    let popupContent = '<div class="popup-content-inner">';
+    popupContent += `<h3>${properties['name']}</h3>`;
+    if (properties['subtitle']) {
+        popupContent += `<h4>${properties['subtitle']}</h4>`;
+    }
+    if (properties['address'] || properties['zip'] || properties['city']) {
+        let address = '';
+        if (properties['address']) {
+            address += properties['address'];
+            if (properties['zip']) {
+                address += `, ${properties['zip']}`;
+            }
+            if (properties['city']) {
+                address += ` ${properties['city']}`;
+            }
+        }
+        if (address.length > 0) {
+            popupContent += '<div class="address">';
+            popupContent += `<p>${address}</p>`;
+            popupContent += '</div>';
+        }
+    }
+    if (properties['teaser']) {
+        popupContent += `<div class="teaser">${properties['teaser']}</div>`;
+    }
+    if (properties['text']) {
+        popupContent += `<div class="text">${properties['text']}</div>`;
+    }
+    popupContent += '</div>';
+    return popupContent;
 }
 
 // Load GeoJSON layers with custom options

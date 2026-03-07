@@ -18,7 +18,7 @@ html, body {
     background-color: rgba(255, 255, 255, 0.8);
     z-index: 1000;
     display: flex;
-    align-items: center;
+    align-items: self-end;
     justify-content: space-between;
     gap: 16px;
 }
@@ -27,9 +27,17 @@ ul.legend {
     display: flex;
     gap: 16px;
 }
+@media (max-width: 600px) {
+    ul.legend {
+        flex-direction: column;
+        gap: 8px;
+        
+    }
+}
 ul.legend li {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     gap: 4px;
 }
 ul.legend li .legend-color {
@@ -45,6 +53,11 @@ ul.legend li .legend-color {
 }
 #map .leaflet-top {
   top: 10%;
+}
+@media (max-width: 600px) {
+    #map .leaflet-top {
+        top: 20%;
+    }
 }
 .leaflet-popup-content div.popup-content-inner {
     font-family: sans-serif;
