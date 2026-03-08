@@ -9,11 +9,11 @@ L.tileLayer.wms('https://geodienste.hamburg.de/HH_WMS_Historische_Karte_1_5000',
     transparent: true,
     version: '1.1.1',
     srs: 'EPSG:3857',
-    attribution: 'Karte: LGV Hamburg, Lizenz <a href="https://www.govdata.de/dl-de/by-2-0" target="_blank">dl-de/by-2-0</a>',
+    attribution: '1980er Kartenhintergrund: LGV Hamburg, Lizenz <a href="https://www.govdata.de/dl-de/by-2-0" target="_blank">dl-de/by-2-0</a>',
     zIndex: 1
 }).addTo(map);
 
-map.attributionControl.setPrefix('<a href="https://a-thousand-channels.xyz" target="_blank">A Thousand Channels </a>');
+map.attributionControl.setPrefix('Karte von <a href="https://a-thousand-channels.xyz" target="_blank">A Thousand Channels </a>');
 
 // Reusable function to load and render GeoJSON layers
 function addGeoJSONLayer(url, options = {}) {
@@ -67,7 +67,7 @@ function addGeoJSONLayer(url, options = {}) {
                             sodipodi:nodetypes="cccccccccc" />
                         </g>
                         <g>
-                        <text transform="matrix(1 0 0 1 49.5 249)" fill="#555" text-anchor="middle">`+feature.properties.name+`</text>
+                        <text transform="matrix(1 0 0 1 49.5 249)" fill="transparent" text-anchor="middle">`+feature.properties.name+`</text>
                             
                         </g>
                         </g>
@@ -83,20 +83,20 @@ function addGeoJSONLayer(url, options = {}) {
                     direction: 'top',
                     opacity: 0.9,
                     className: 'leaflet-tooltip-audio',
-                    offset: [-3, -70],
+                    offset: [-3, -66],
                     interactive: true,
                     permanent: false
                     });
-  
+                    // TODO open popup with more info,
+                    const popupContent = PopUpContent(feature.properties);
+                    marker.bindPopup(popupContent, {
+                        maxWidth: 400,
+                        offset: [-3, -50],
+
+                    })
                     marker.on('click', function (event) {
                         console.log('clicked');
-                        // TODO open popup with more info, e.g. audio player, text, etc.
-                        const popupContent = PopUpContent(feature.properties);
-                        marker.bindPopup(popupContent, {
-                            maxWidth: 400,
-                            offset: [-3, -50],
-
-                        }).openPopup();
+                        marker.openPopup();
                     });
                     return marker;
                 }
