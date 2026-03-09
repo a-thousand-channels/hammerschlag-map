@@ -15,6 +15,29 @@ L.tileLayer.wms('https://geodienste.hamburg.de/HH_WMS_Historische_Karte_1_5000',
 
 map.attributionControl.setPrefix('Karte von <a href="https://a-thousand-channels.xyz" target="_blank">A Thousand Channels </a>');
 
+map.on('popupopen', function (e) {
+  if (window.innerWidth <= 768) {
+    const popupEl = e.popup.getElement();
+    // The close button is the next sibling inside .leaflet-popup-pane
+    const closeBtn = popupEl.querySelector('.leaflet-popup-close-button');
+
+    document.body.appendChild(popupEl);
+
+    // Re-attach close button inside the popup wrapper so it moves with it
+    if (closeBtn) {
+      const wrapper = popupEl.querySelector('.leaflet-popup-content-wrapper');
+      wrapper.insertBefore(closeBtn, wrapper.firstChild);
+    }
+  }
+});
+
+map.on('popupclose', function (e) {
+  const popupEl = e.popup.getElement();
+  if (popupEl && popupEl.parentNode === document.body) {
+    document.body.removeChild(popupEl);
+  }
+});
+
 // Reusable function to load and render GeoJSON layers
 function addGeoJSONLayer(url, options = {}) {
     const {
@@ -90,9 +113,7 @@ function addGeoJSONLayer(url, options = {}) {
                     // TODO open popup with more info,
                     const popupContent = PopUpContent(feature.properties);
                     marker.bindPopup(popupContent, {
-                        maxWidth: 400,
                         offset: [-3, -50],
-
                     })
                     marker.on('click', function (event) {
                         console.log('clicked');
