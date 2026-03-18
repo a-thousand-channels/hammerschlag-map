@@ -22,6 +22,15 @@ html, body {
     justify-content: space-between;
     gap: 16px;
 }
+#header p {
+    font: 16px/20px serif;
+}
+@media (max-width: 600px) {
+    #header p {
+        font: 14px/18px serif;
+    }
+}
+
 ul.legend {
     list-style: none;
     display: flex;
@@ -30,7 +39,8 @@ ul.legend {
 @media (max-width: 600px) {
     ul.legend {
         flex-direction: column;
-        gap: 8px;
+        gap: 5px;
+         font: 14px/18px serif;
         
     }
 }
@@ -45,20 +55,32 @@ ul.legend li .legend-color {
     height: 16px;
     border-radius: 16px;
 }
-
+@media (max-width: 600px) {
+    ul.legend li .legend-color {
+        width: 12px;
+        height: 12px;
+        border-radius: 12px;
+    }
+}
 #map {
     width: 100%;
     height: 100%;
-    font: 16px/20px sans-serif;
+    font: 16px/20px serif;
 }
 #map .leaflet-top {
-  top: 10%;
+  top: 13%;
 }
-@media (max-width: 600px) {
+@media (max-width: 898px) {
     #map .leaflet-top {
-        top: 20%;
+        top: 16%;
     }
 }
+@media (max-width: 595px) {
+    #map .leaflet-top {
+        top: 22%;
+    }
+}
+
 
 #map .leaflet-popup {
     max-width: 600px;
@@ -111,8 +133,8 @@ ul.legend li .legend-color {
         color: #333;
         border: none;
     }
-  }    
-}
+ }    
+
 .leaflet-popup-content div.popup-content-inner {
     font-family: sans-serif;
     padding: 8px;
@@ -140,10 +162,14 @@ ul.legend li .legend-color {
 .leaflet-popup-content div.popup-content-inner div {
     margin-top: 0;
     margin-bottom: 8px;
+    font: 16px/20px serif;
+    line-height: 1.4;
+    
 }
 
 .leaflet-popup-content div.popup-content-inner div.address {
-    font: 16px/20px monospace;
+    font: 12px/20px monospace;
+    color: #0078A8;
     margin-top: 4px 8px;
     padding: 8px;
     border-radius: 4px;
@@ -188,8 +214,6 @@ ul.legend li .legend-color {
   border: 0;
   color: #222;
   box-shadow: 0 1px 3px rgba(0,0,0,0);
-  
-
 }
 #map .leaflet-tooltip h4 {
 
@@ -205,4 +229,11 @@ ul.legend li .legend-color {
   bottom: 0;
   margin-bottom: -12px;
   border-top-color: transparent;
+}
+
+#map .leaflet-control-attribution, #map .leaflet-control-scale-line {
+  padding: 0 5px;
+  color: #333;
+  line-height: 1.4;
+  font-size: 10px;
 }
