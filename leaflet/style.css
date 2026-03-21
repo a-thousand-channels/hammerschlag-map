@@ -14,7 +14,7 @@ html, body {
     top: 0;
     left: 0;
     width: 100%;
-    padding: 8px 16px;
+    padding: 8px 10px 16px;
     background-color: rgba(255, 255, 255, 0.8);
     z-index: 1000;
     display: flex;
@@ -22,12 +22,24 @@ html, body {
     justify-content: space-between;
     gap: 16px;
 }
+body[data-theme="dark"] #header {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #bbb;
+    box-shadow: 0 1px 5px rgba(200,200,200,0.45);
+}
+#header h1 button {
+    border: none;
+    background: transparent;
+}
+body[data-theme="dark"] #header h1 button {
+    color: #bbb;
+}
 #header p {
-    font: 16px/20px serif;
+    font: 14px/20px serif;
 }
 @media (max-width: 600px) {
     #header p {
-        font: 14px/18px serif;
+        font: 12px/18px serif;
     }
 }
 
@@ -35,12 +47,13 @@ ul.legend {
     list-style: none;
     display: flex;
     gap: 16px;
+    font: 14px/20px serif;
 }
 @media (max-width: 600px) {
     ul.legend {
         flex-direction: column;
         gap: 5px;
-         font: 14px/18px serif;
+         font: 12px/18px serif;
         
     }
 }
@@ -67,8 +80,12 @@ ul.legend li .legend-color {
     height: 100%;
     font: 16px/20px serif;
 }
+
+body[data-theme="dark"] #map {
+  filter: invert(1) hue-rotate(185deg);
+}
 #map .leaflet-top {
-  top: 13%;
+  top: 16%;
 }
 @media (max-width: 898px) {
     #map .leaflet-top {
@@ -86,7 +103,7 @@ ul.legend li .legend-color {
     max-width: 600px;
 }
 @media (max-width: 768px  ) {
-    .leaflet-popup {
+    #overlay {
       position: fixed !important;
       z-index: 9999;
       top: 0 !important;
@@ -97,20 +114,36 @@ ul.legend li .legend-color {
       max-width: 100% !important;
       margin: 0 !important;
       transform: none !important;
-        background-color: rgba(0,0,0,0.5);
-        padding: 20px
+      background-color: rgba(0,0,0,0.5);
+      padding: 20px;
+      animation: fadeInOverlay 0.3s ease-out;
 
     }
+    .animate-overlay {
+        animation: fadeInOverlay 0.3s ease-out;
+    }
+    @keyframes fadeInOverlay {
+        from {
+            opacity: 0;     
+        }
+        to {
+            opacity: 1;         
+        }
+    }   
 
     .leaflet-popup-content-wrapper {
-        position: relative;
+      position: relative;
       width: 100% !important;
       height: 100% !important;
       border-radius: 0 !important;
       display: flex;
       flex-direction: column;
     }
-
+    body[data-theme="dark"] .leaflet-popup-content-wrapper {
+        background-color: rgba(0, 0, 0, 0.8);
+        color: #bbb;
+        box-shadow: 0 1px 10px rgba(200,200,200,0.65);
+    }
     .leaflet-popup-content {
       flex: 1;
       overflow-y: auto;
@@ -131,7 +164,14 @@ ul.legend li .legend-color {
         line-height: 1;
         text-decoration: none;
         color: #333;
+        background-color: transparent;
         border: none;
+        cursor: pointer;
+    }
+    body[data-theme="dark"]  .leaflet-popup-close-button {
+        cursor: pointer;
+        color: #aaa;
+        background-color: transparent;
     }
  }    
 
@@ -191,6 +231,9 @@ ul.legend li .legend-color {
     margin-bottom: 8px;
 }
 
+.leaflet-popup-content div.popup-content-inner .images img {
+  max-width: 100%;
+}
 .leaflet-popup-close-button {
     right: 10px;
     top: 0;

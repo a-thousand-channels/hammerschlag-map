@@ -1,6 +1,14 @@
 
+let initialZoom = 14;
+
+if (window.innerWidth <= 480) {
+    initialZoom = 13;
+} else if (window.innerWidth <= 768) {
+    initialZoom = 14;
+}
+
 // Initialize map
-const map = L.map('map').setView([53.55, 10.0], 13);
+const map = L.map('map').setView([53.556, 9.995], initialZoom);
 
 // Add WMS layer - Hamburg Historical Map 1980s
 L.tileLayer.wms('https://geodienste.hamburg.de/HH_WMS_Historische_Karte_1_5000', {
@@ -19,23 +27,29 @@ map.on('popupopen', function (e) {
   if (window.innerWidth <= 768) {
     const popupEl = e.popup.getElement();
     // The close button is the next sibling inside .leaflet-popup-pane
-    const closeBtn = popupEl.querySelector('.leaflet-popup-close-button');
+    const popupContent = popupEl.querySelector('.leaflet-popup-content-wrapper');
+    // Don't display popup itself
+    popupEl.style.display = 'none';
 
-    document.body.appendChild(popupEl);
+    let overlay = document.getElementById('overlay');
+    overlay.style.display = 'block';   
+    overlay.classList.add('animate-overlay');
 
-    // Re-attach close button inside the popup wrapper so it moves with it
-    if (closeBtn) {
-      const wrapper = popupEl.querySelector('.leaflet-popup-content-wrapper');
-      wrapper.insertBefore(closeBtn, wrapper.firstChild);
-    }
+    let overlayContent = document.getElementById('overlay-content');
+    overlayContent.innerHTML = popupContent.innerHTML;
+
   }
 });
 
 map.on('popupclose', function (e) {
-  const popupEl = e.popup.getElement();
-  if (popupEl && popupEl.parentNode === document.body) {
-    document.body.removeChild(popupEl);
-  }
+    if (window.innerWidth <= 768) {
+        let overlay = document.getElementById('overlay');
+        overlay.style.display = 'none';
+        let overlayContent = document.getElementById('overlay-content');
+        overlayContent.innerHTML = '';       
+        
+        closeOverlay.click(); // Trigger the close button click to ensure consistent behavior
+    }   
 });
 
 // Reusable function to load and render GeoJSON layers
@@ -45,6 +59,7 @@ function addGeoJSONLayer(url, options = {}) {
         outerRadius = 18,
         innerRadius = 12,
         color = '#007bff',
+        shadowColor = 'rgba(255, 255, 255, 0.5)',
         outerOpacity = 0.7,
         tooltipProperty = 'name',
     } = options;
@@ -80,7 +95,7 @@ function addGeoJSONLayer(url, options = {}) {
                             transform="matrix(0.97734571,0,0,0.97223334,-156.08824,114.17017)">
                             <path
                             class="marker_shadow"
-                            style="opacity:0.8;fill:#808080;fill-opacity:1;stroke-width:0.432578;stroke-linejoin:bevel;stroke-dasharray:0.432578, 0.865158;paint-order:stroke fill markers"
+                            style="opacity:0.8;fill:${shadowColor};fill-opacity:1;stroke-width:0.432578;stroke-linejoin:bevel;stroke-dasharray:0.432578, 0.865158;paint-order:stroke fill markers"
                             d="m 207.93885,134.97565 3.16945,-0.27113 3.40993,-0.29166 c 1.00015,-0.0762 1.05377,0.0297 1.00255,0.99571 l -0.32807,4.02177 -0.56023,6.86792 -4.42218,5.34666 -4.02772,-4.87641 0.39143,-10.4702 c 0.0796,-1.07374 0.23097,-1.23472 1.36484,-1.32265 z"
                             sodipodi:nodetypes="ccccccccccc" />
                             <path
@@ -124,98 +139,6 @@ function addGeoJSONLayer(url, options = {}) {
                 });
             console.log('Layer ID '+DivIconLayer._leaflet_id);
             DivIconLayer.addTo(layerGroup);
- 
-    
-
-            /* tooltip custom */
-            /*
-            const tooltip = document.createElement('div');
-            tooltip.style.cssText = `
-                display: none;
-                position: absolute;
-                background: rgba(0, 0, 0, 0.8);
-                color: white;
-                padding: 8px 12px;
-                border-radius: 4px;
-                font-size: 12px;
-                pointer-events: none;
-                z-index: 1000;
-                white-space: nowrap;
-                font-family: sans-serif;
-            `;
-            document.body.appendChild(tooltip);
-            */
-            /* work with data */
-            /*
-            data.features.forEach(feature => {
-                const coordinates = feature.geometry.coordinates;
-                const properties = feature.properties;
-                const latlng = [coordinates[1], coordinates[0]];
-
-                // Create circle marker with outer circle
-                const outerCircle = L.circleMarker(latlng, {
-                    radius: outerRadius,
-                    fillColor: color,
-                    color: color,
-                    weight: 0,
-                    opacity: 0.8,
-                    fillOpacity: outerOpacity,
-                    zIndex: 10
-                });
-
-                // Create inner circle (solid dot)
-                const innerCircle = L.circleMarker(latlng, {
-                    radius: innerRadius,
-                    fillColor: color,
-                    color: color,
-                    weight: 0,
-                    opacity: 0.8,
-                    fillOpacity: 0.8,
-                    zIndex: 11
-                });
-
-                layerGroup.addLayer(outerCircle);
-                layerGroup.addLayer(innerCircle);
-
-                // Combine both circles for interaction
-                const circles = [outerCircle, innerCircle];
-
-                // Add popup on click
-                circles.forEach(circle => {
-                    circle.on('click', (e) => {
-                        const popupContent = PopUpContent(properties);
-                        L.popup({maxWidth: 400})
-                            .setLatLng(latlng)
-                            .setContent(popupContent)
-                            .openOn(map);
-                    });
-                });
-
-                // Change cursor to pointer on hover
-                circles.forEach(circle => {
-                    circle.on('mouseenter', () => {
-                        map.getContainer().style.cursor = 'pointer';
-                    });
-
-                    circle.on('mouseleave', () => {
-                        map.getContainer().style.cursor = '';
-                    });
-
-                    // Add tooltip on hover
-                    circle.on('mousemove', (e) => {
-                        const tooltipText = properties[tooltipProperty] || 'Item';
-                        tooltip.textContent = tooltipText;
-                        tooltip.style.display = 'block';
-                        tooltip.style.left = (e.originalEvent.pageX + 10) + 'px';
-                        tooltip.style.top = (e.originalEvent.pageY + 10) + 'px';
-                    });
-
-                    circle.on('mouseleave', () => {
-                        tooltip.style.display = 'none';
-                    });
-                });
-            });
-            */
         })
         .catch(error => console.error(`Error loading GeoJSON from ${url}:`, error));
 }
@@ -249,6 +172,14 @@ function PopUpContent(properties) {
     if (properties['text']) {
         popupContent += `<div class="text">${properties['text']}</div>`;
     }
+    if (properties['images'].length > 0) {
+        popupContent += '<div class="images">';
+        console.log(properties['images']);
+        properties['images'].forEach(image => {
+            popupContent += image['image_linktag'] ;
+        });
+        popupContent += '</div>';
+    }
     popupContent += '</div>';
     return popupContent;
 }
@@ -271,3 +202,45 @@ addGeoJSONLayer(
         tooltipProperty: 'name',
     }
 );
+
+let overlay = document.getElementById('overlay');
+document.getElementById('overlay').style.display = 'none';
+let closeOverlay = document.getElementById('close-overlay');
+closeOverlay.addEventListener('click', function() {
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('overlay-content').innerHTML = '';
+ 
+    map.closePopup();
+
+
+     
+});
+
+
+
+const sunIcon = document.getElementById('sun');
+const moonIcon = document.getElementById('moon');
+document.getElementById('theme-toggle').addEventListener('click', function() {
+    const currentTheme = document.body.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.body.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    setThemeIconsVisibility();
+});
+// on page load restore theme from localStorage
+document.addEventListener('DOMContentLoaded', function() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.body.setAttribute('data-theme', savedTheme);
+    setThemeIconsVisibility();
+});
+function setThemeIconsVisibility() {
+    const currentTheme = document.body.getAttribute('data-theme');
+    if (currentTheme === 'dark') {
+        sunIcon.style.display = 'block';
+        moonIcon.style.display = 'none';
+    } else {
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+    }
+}
+

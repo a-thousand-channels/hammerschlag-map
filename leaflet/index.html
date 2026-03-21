@@ -3,15 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hammerschlag. Toilettenüberwachung und queere Interventionen. Hamburg in den frühen 1980er Jahren.</title>
+    <title>Hammerschlag. Karte der Toilettenüberwachung und queere Interventionen. Hamburg in den frühen 1980er Jahren.</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="leaflet.css" />
 </head>
 <body>
     <div id="header">
         <div id="title">
-            <h1>Hammerschlag.</h1>
-            <p>Toilettenüberwachung und queere Interventionen in Hamburg in den 1980er Jahre.<br />Eine Forschung von Simon Schultz.</p>
+            <h1>Hammerschlag
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path></svg>
+                    <svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                </button>
+            </h1>
+            
+            <p>Karte der Toilettenüberwachung und queere Interventionen. Hamburg in den frühen 1980er Jahren. Eine Forschung von Simon Schultz.</p>
         </div>
         <div>
             <ul class="legend">
@@ -21,6 +27,12 @@
         </div>
     </div>
     <div id="map"></div>
+    <div id="overlay">
+        <div class="leaflet-popup-content-wrapper">
+            <div id="overlay-content"></div>
+            <button id="close-overlay" class="leaflet-popup-close-button" aria-label="Close overlay">&times;</button>
+        </div>
+    </div>
     
     <script src="leaflet.js"></script>
     <script src="script.js"></script>
