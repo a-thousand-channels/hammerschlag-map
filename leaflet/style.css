@@ -30,16 +30,24 @@ body[data-theme="dark"] #header {
 #header h1 button {
     border: none;
     background: transparent;
+    vertical-align: middle;
 }
 body[data-theme="dark"] #header h1 button {
     color: #bbb;
+}
+
+#header h1 {
+    font: 24px/30px serif;
 }
 #header p {
     font: 14px/20px serif;
 }
 @media (max-width: 600px) {
+    #header h1 {
+        font: 20px/30px serif;
+    }
     #header p {
-        font: 12px/18px serif;
+        font: 11px/16px serif;
     }
 }
 
@@ -140,7 +148,7 @@ body[data-theme="dark"] #map {
       flex-direction: column;
     }
     body[data-theme="dark"] .leaflet-popup-content-wrapper {
-        background-color: rgba(0, 0, 0, 0.8);
+        background-color: rgba(30, 30, 30, 0.8);
         color: #bbb;
         box-shadow: 0 1px 10px rgba(200,200,200,0.65);
     }
