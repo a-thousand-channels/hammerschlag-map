@@ -184,7 +184,6 @@ body[data-theme="dark"] #map {
  }    
 
 .leaflet-popup-content div.popup-content-inner {
-    font-family: sans-serif;
     padding: 8px;
 }
 
